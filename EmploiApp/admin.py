@@ -5,6 +5,7 @@ from .models import (Etudiant, Department,
                     Course, Classroom,
                     Seance, HourRange,
                     )
+from .forms import SeanceForm
 
 # Register your models here.
 
@@ -42,7 +43,12 @@ class ClassroomAdmin(admin.ModelAdmin):
 
 @admin.register(Seance)
 class SeanceAdmin(admin.ModelAdmin):
-    pass
+    form = SeanceForm
+    list_display = ['course', 'group', 'classroom', 'start_time', 'end_time']
+    class Media:
+        js = ('assets/js/seance_form.js',)  # Lien vers un fichier JavaScript personnalisé
+
+
 
 @admin.register(HourRange)
 class HourRangeAdmin(admin.ModelAdmin):

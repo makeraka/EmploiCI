@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+{% load static%}
+
+
+{% block content %}
+<form method="get" action="{% url 'teacher' %}">
+    <select name="semestre" onchange="this.form.submit()"class="form-select form-select-sm w-mw-125px form-select-solid bg-primary "data-control="select2"data-hide-search="true"  >
+        <option value="" class="text-white-600">-- Sélectionner un semestre a filtrer --</option>
+        {% for semestre in semestres %}
+            <option value="{{ semestre.id }}" {% if semestre == selected_semestre %}selected{% endif %}>Semestre {{ semestre.number }}</option>
+        {% endfor %}
+    </select>
+</form>
+
+<div class="card-body p-9 pt-4">
+    <!--begin::Dates-->
+    <ul class="nav nav-pills d-flex flex-nowrap hover-scroll-x py-2">
+        {% for day in days.keys %}
+        <li class="nav-item me-1">
+            <a class="nav-link btn d-flex flex-column flex-center rounded-pill min-w-45px me-2 py-4 px-3 {% if day == current_day %}btn-active-danger active{% endif %}"
+                data-bs-toggle="tab" href="#kt_schedule_day_{{ day }}">
+                <span class="opacity-50 fs-7 fw-semibold">{{ day|date:"l" }}</span>
+                <span class="opacity-50 fs-7 fw-semibold">{{ day }}</span>
+            </a>
+        </li>
+        {% endfor %}
+    </ul>
+    <!--end::Dates-->
+
+    <!--begin::Tab Content-->
+    <div class="tab-content">
+        {% for day, sessions in days.items %}
+        <div id="kt_schedule_day_{{ day }}" class="tab-pane fade {% if day == current_day %}show active{% endif %}">
+            {% for session in sessions %}
+            <div class="d-flex flex-stack position-relative mt-8 {% if session.is_active %}active-session{% endif %}">
+                <div class="position-absolute h-100 w-4px bg-primary rounded top-0 start-0"></div>
+                <div class="fw-semibold ms-5 text-gray-600">
+                    <div class="fs-5">{{ session.start_time|date:"H:i" }} - {{ session.end_time|date:"H:i" }}
+                        <span class="fs-7 text-gray-400 text-uppercase">{{ session.start_time|date:"a" }}</span>
+                    </div>
+                    <a href="#" class="fs-5 fw-bold text-gray-800 text-hover-primary mb-2">{{ session.course }}</a>
+                    <div class="text-gray-400 ">Professeur <a href="#">{{ session.course.Teacher.first_name }}
+                            {{session.course.Teacher.last_name }}</a></div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="w-100 text-center" data-kt-menu-trigger="{default: 'click', lg: 'hover'}"
+                data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end">
+                <img src="{% static 'assets/media/avatars/300-31.jpg' %}" class="img-large" alt="Image description">
+            </div>
+            {% endfor %}
+        </div>
+        {% endfor %}
+    </div>
+
+    <style>
+        .active-session {
+            border-left: 4px solid #28a745;
+            /* Bordure verte subtile */
+            
+            background-color: #f0fdf4;
+            /* Fond légèrement vert pour plus de visibilité */
+            padding-left: 10px;
+            /* Espacement pour la bordure */
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            /* Ombre légère */
+            font-weight: bold;
+            /* Texte en gras pour attirer l'attention */
+            position: relative;
+            /* Pour positionner l'icône */
+            display: flex;
+            align-items: center;
+        }
+
+        .active-session::after {
+            content: '\f111';
+            /* Code Unicode pour l'icône (ici un cercle plein) */
+            font-family: "Font Awesome 5 Free";
+            /* Nécessite l'intégration de Font Awesome */
+            font-weight: 900;
+            /* Style d'icône en gras */
+            color: #28a745;
+            /* Couleur de l'icône */
+            font-size: 1.5rem;
+            /* Taille de l'icône */
+            margin-right: 10px;
+            /* Espacement entre l'icône et le texte */
+        }
+
+                .text-center {
+            text-align: center;
+        }
+
+        .img-large {
+            max-width: 100%;
+            height: auto;
+            width: 50%; /* Largeur par défaut sur les écrans plus grands */
+            display: block;
+            margin: 0 auto;
+        }
+
+        /* Agrandir l'image sur les petits écrans */
+        @media (max-width: 768px) {
+            .img-large {
+                width: 80%; /* Largeur de l'image sur les écrans mobiles */
+            }
+        }
+
+        @media (max-width: 480px) {
+            .img-large {
+                width: 100%; /* Largeur maximale sur les très petits écrans */
+            }
+        }
+
+    </style>
+
+
+
+    <!--end::Card body-->
+
+
+
+    {% endblock content %}

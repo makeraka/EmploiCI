@@ -3,6 +3,7 @@
 <html lang="fr">
 
 <head>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     {% include "_partials/meta_data.html" %}
     <title>{% block title %}
@@ -21,7 +22,9 @@
             {% include "_partials/navbar.html" %}
     {% endblock navbar %}
 
-    <!-- contenu de la page-->
+         {% block teacher_title %}
+            
+        {% endblock teacher_title %}
 
         {% block content %}
 
@@ -38,6 +41,7 @@
     {% block script_link %}
     <!--begin::Javascript-->
     <script>var hostUrl = "assets/";</script>
+    
     <!--begin::Global Javascript Bundle(mandatory for all pages)-->
     <script src="{% static 'assets/plugins/global/plugins.bundle.js' %}"></script>
     <script src="{% static 'assets/js/scripts.bundle.js' %}"></script>

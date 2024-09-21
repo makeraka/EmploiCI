@@ -9,7 +9,7 @@
             <div class="app-container container-fluid d-flex align-items-stretch justify-content-between" id="kt_app_header_container">
 
                 <!--begin::Mobile logo-->
-                <div class="d-flex align-items-center flex-grow-1 flex-lg-grow-0">
+                <div class="d-flex align-items-center flex-grow-1 flex-lg-grow-0"> 
                     <a href="../../demo1/dist/index.html" class="d-lg-none">
                         <img alt="Logo" src="assets/media/logos/default-small.svg" class="h-30px" />
                     </a>
@@ -35,10 +35,17 @@
                             <!--begin:Menu item-->
                             <div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="bottom-start" class="menu-item menu-lg-down-accordion me-0 me-lg-2">
                                 <!--begin:Menu link-->
-                                <span class="menu-link">
-                                    <span class="menu-title">Ma disponibilité</span>
-                                    <span class="menu-arrow d-lg-none"></span>
-                                </span>
+                                <div class="menu-item px-5">
+                                    <a href=" {% url "dispo" %} " class="menu-link px-5">Ma disponibilité</a>
+                                </div>
+               
+                            </div>
+
+                            <div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="bottom-start" class="menu-item menu-lg-down-accordion me-0 me-lg-2">
+                                <!--begin:Menu link-->
+                                <div class="menu-item px-5">
+                                    <a href=" {% url "profil" %} " class="menu-link px-5">Mon profil</a>
+                                </div>
                
                             </div>
                            
@@ -66,9 +73,12 @@
                                         <!--end::Avatar-->
                                         <!--begin::Username-->
                                         <div class="d-flex flex-column">
-                                            <div class="fw-bold d-flex align-items-center fs-5">Kamano
+                                     
+                                            <div class="fw-bold d-flex align-items-center fs-5">
                                             <span class="badge badge-light-success fw-bold fs-8 px-2 py-1 ms-2">Pour nous</span></div>
                                             <a href="#" class="fw-semibold text-muted text-hover-primary fs-7">max@kt.com</a>
+                                           
+
                                         </div>
                                         <!--end::Username-->
                                     </div>
@@ -78,9 +88,7 @@
                                 <div class="separator my-2"></div>
                                 <!--end::Menu separator-->
                                 <!--begin::Menu item-->
-                                <div class="menu-item px-5">
-                                    <a href="../../demo1/dist/account/overview.html" class="menu-link px-5">My Profile</a>
-                                </div>
+                                
     
                                 
                                 <!--end::Menu item-->
@@ -118,9 +126,7 @@
         </div>
         <!--end::Header-->
         <!--begin::Wrapper-->
-        <div class="app-wrapper flex-column flex-row-fluid" id="kt_app_wrapper">
-            <h1>Bienvenu sur votre Emploi du temps</h1>
-        </div>
+       
         <!--end::Wrapper-->
     </div>
     <!--end::Page-->

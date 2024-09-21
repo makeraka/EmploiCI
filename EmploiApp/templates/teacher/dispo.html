@@ -1,0 +1,289 @@
+{% extends "base.html" %}
+{% load static%}
+
+{% block navbar %}
+{% include "_partials/nave_teacher.html" %}
+{% endblock navbar %}
+
+{% block content %}
+<div class="card mb-5 mb-xl-8">
+	<!--begin::Header-->
+	<div class="card-header border-0 pt-5 bg-primary">
+		<div class="col-12">
+			{% if messages %}
+			{% for message in messages %}
+			{% if message.tags == 'error' %}
+			<div class="alert alert-danger" style="margin-top:10px">{{ message }}</div>
+			{% endif %}
+			{% if message.tags == 'success' %}
+			<div class="alert alert-success" style="margin-top:10px">{{ message }}</div>
+			{% endif %}
+			{% endfor %}
+			{% endif %}
+		</div>
+		<h3 class="card-title align-items-start flex-column ">
+			<span class="card-label fw-bold fs-3 mb-1 ">Liste de disponibilité</span>
+			<span class="text-muted mt-1 fw-semibold fs-7"></span>
+		</h3>
+		<div class="card-toolbar" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-trigger="hover"
+			title="Click to add a user">
+			<a href="#" class="btn btn-sm btn-light" data-bs-toggle="modal" data-bs-target="#kt_modal_invite_friends">
+				<!--begin::Svg Icon | path: icons/duotune/arrows/arr075.svg-->
+				<span class="svg-icon svg-icon-3">
+					<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<rect opacity="0.5" x="11.364" y="20.364" width="16" height="2" rx="1"
+							transform="rotate(-90 11.364 20.364)" fill="currentColor" />
+						<rect x="4.36396" y="11.364" width="16" height="2" rx="1" fill="currentColor" />
+					</svg>
+				</span>
+				<!--end::Svg Icon-->Ajouter</a>
+		</div>
+	</div>
+	<!--end::Header-->
+	<!--begin::Body-->
+	<div class="card-body py-3">
+		<!--begin::Table container-->
+		<div class="table-responsive">
+			<div class="container mt-4">
+    <div class="row">
+        {% for dispo in dispos %}
+        <div class="col-md-3 mb-4">
+            <div class="card card-custom shadow-lg h-100 ">
+                <div class="card-body">
+                    <h5 class="card-title">{{ dispo.teacher.first_name }} {{ dispo.teacher.last_name }}</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">
+                    {% for course in dispo.teacher.course_set.all %}
+                        {{ course.label }} (Semestre {{ course.semestre.number }}){% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                </h6>
+                    <p class="card-text">
+                        Jour : {{ dispo.get_day_week_display }}<br>
+                        Heure : {{ dispo.hourRange.start_time|time:"H\\hi" }} - {{ dispo.hourRange.end_time|time:"H\\hi" }}
+                    </p>
+                    <a href="" class="badge badge-primary">Modifier</a>
+                    <a href="" class="badge badge-danger">Supprimer</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination Controls -->
+    <nav aria-label="Page navigation">
+        <ul class="pagination">
+            {% if dispos.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page=1" aria-label="First">
+                    <span aria-hidden="true">&laquo;&laquo;</span>
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ dispos.previous_page_number }}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            {% endif %}
+            
+            {% for num in dispos.paginator.page_range %}
+                {% if dispos.number == num %}
+                <li class="page-item active" aria-current="page"><span class="page-link">{{ num }}</span></li>
+                {% else %}
+                <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                {% endif %}
+            {% endfor %}
+
+            {% if dispos.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ dispos.next_page_number }}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ dispos.paginator.num_pages }}" aria-label="Last">
+                    <span aria-hidden="true">&raquo;&raquo;</span>
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+</div>
+
+
+			<!--end::Table-->
+		</div>
+		<!--end::Table container-->
+	</div>
+	<!--end::Body-->
+</div>
+
+<!--begin::Modal-->
+<div class="modal fade" id="kt_modal_invite_friends" tabindex="-1" aria-hidden="true">
+	<!--begin::Modal dialog-->
+	<div class="modal-dialog mw-850px">
+		<!--begin::Modal content-->
+		<div class="modal-content">
+			<!--begin::Modal header-->
+			<div class="text-center mb-13">
+				<!--begin::Title-->
+				<h1 class="mb-3">Ajouter une disponibilité</h1>
+				<!--end::Title-->
+				<!--begin::Description-->
+				<div class="text-muted fw-semibold fs-5">Veillez renseigner vos disponibilité du semestre
+
+				</div>
+				<!--end::Description-->
+			</div>
+			<!--end::Heading-->
+
+			<!--begin::Modal header-->
+			<!--begin::Modal body-->
+			<div class="modal-body scroll-y mx-5 mx-xl-18 pt-0 pb-15">
+				<!--begin::Heading-->
+
+				<form role="form" action="/add_dispoWeek" method="post">
+					{% csrf_token %}
+					<div class="card-body">
+						<!-- Sélection du professeur -->
+						<div class="fv-row mb-8">
+							<label for="teacher">Disponibilité Pour :</label>
+							<select name="teacher" class="form-select form-select-sm w-mw-125px form-select-solid">
+								<option value="" selected="selected">Sélectionner un professeur...</option>
+								{% for teacher in teachers %}
+								<option value="{{ teacher.username }}">{{ teacher.first_name }} {{ teacher.last_name }}
+								</option>
+								{% endfor %}
+							</select>
+						</div>
+
+						<!-- Sélection du semestre -->
+						<div class="fv-row mb-8">
+							<label for="semestre">Semestre</label>
+							<select name="semestre" id="semestre"
+								class="form-select form-select-sm w-mw-125px form-select-solid">
+								<option value="" selected="selected">Choisir le semestre...</option>
+								{% for semestre in semestres %}
+								<option value="{{ semestre.id }}">Semestre {{ semestre.number }}</option>
+								{% endfor %}
+							</select>
+						</div>
+
+						<!-- Sélection du jour (liste déroulante des jours de la semaine) -->
+						<div class="fv-row mb-8">
+							<label for="day">Pour quel jour :</label>
+							<select name="day" id="day" class="form-select form-select-sm w-mw-125px form-select-solid">
+								<option value="" selected="selected">Choisir un jour...</option>
+								<option value="0">Lundi</option>
+								<option value="1">Mardi</option>
+								<option value="2">Mercredi</option>
+								<option value="3">Jeudi</option>
+								<option value="4">Vendredi</option>
+								<option value="5">Samedi</option>
+								<option value="6">Dimanche</option>
+							</select>
+						</div>
+
+						<!-- Sélection de la plage horaire (filtrée par jour et semestre) -->
+						<div class="fv-row mb-8">
+							<label for="rangetime">Plage horaire</label>
+
+							<select name="rangetime" id="rangetime"
+								class="form-select form-select-sm w-mw-125px form-select-solid">
+								<option value="" selected="selected">Choisir la plage horaire...</option>
+							</select>
+						</div>
+
+						<!-- Bouton pour soumettre le formulaire -->
+						<div class="card-footer">
+							<button type="submit" class="btn btn-primary btn-block">Ajouter</button>
+						</div>
+					</div>
+				</form>
+
+			</div>
+			<!--end::Modal body-->
+		</div>
+		<!--end::Modal content-->
+	</div>
+	<!--end::Modal dialog-->
+</div>
+
+<!-- les modal de d'ajout du surplus pour le professeur ainsi que l'utilisateur  -->
+
+<script>
+	$(document).ready(function() {
+		$('#semestre, #day').change(function() {
+			var semestre = $('#semestre').val();
+			var day = $('#day').val();
+			if (semestre && day) {
+				$.ajax({
+					url: "{% url 'get_available_hours' %}",
+					data: {
+						'semestre': semestre,
+						'day': day
+					},
+					success: function(response) {
+						console.log(response); // Vérification de la réponse
+						var options =
+							'<option value="" selected="selected">Choisir la plage horaire...</option>';
+						response.available_hours.forEach(function(hourRange) {
+							// Convertir les heures en format lisible
+							var startDate = new Date(hourRange.start_time);
+							var endDate = new Date(hourRange.end_time);
+
+							var start_time = startDate.toLocaleTimeString([], {
+								hour: '2-digit',
+								minute: '2-digit'
+							});
+
+							var end_time = endDate.toLocaleTimeString([], {
+								hour: '2-digit',
+								minute: '2-digit'
+							});
+
+							// Obtenir le jour de la semaine
+							var optionsDay = { weekday: 'long' };
+							var dayName = startDate.toLocaleDateString('fr-FR', optionsDay); // Jour en français
+
+							options += '<option value="' + hourRange.id + '">' +
+								dayName + ' ' + start_time + ' - ' + end_time + '</option>';
+						});
+						$('#rangetime').html(options);
+					},
+					error: function(xhr, status, error) {
+						console.log("Erreur: ", error); // Log si erreur AJAX
+						console.log("Détails: ", xhr.responseText); // Pour voir plus d'informations
+					}
+				});
+			}
+		});
+	});
+</script>
+
+<style>
+	.card-custom {
+    border: 1px solid #ddd;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.card-custom .card-title {
+    font-size: 1.8rem;
+    font-weight: bold;
+}
+
+.card-custom .card-subtitle {
+    font-size: 1rem;
+    color: #6c757d;
+}
+
+.card-custom .card-text {
+    font-size: 0.875rem;
+}
+
+</style>
+
+
+
+
+
+{% endblock content %}

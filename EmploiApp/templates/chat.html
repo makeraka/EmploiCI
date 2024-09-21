@@ -1,0 +1,49 @@
+
+***************************************************************************************************************************
+******************************************* affichage de l'emploi en fonction de chaque jour: 
+
+def teacher(request):
+    # Obtiens le semestre sélectionné depuis les paramètres de la requête, ou utilise un semestre par défaut
+    semestre_id = request.GET.get('semestre', None)
+    
+    if semestre_id:
+        try:
+            semestre = Semestre.objects.get(id=semestre_id)
+        except Semestre.DoesNotExist:
+            semestre = None
+    else:
+        semestre = None
+
+    # Filtrer les séances en fonction du semestre sélectionné
+    if semestre:
+        seances = Seance.objects.filter(course__semestre=semestre)
+    else:
+        seances = Seance.objects.all()
+
+    # Obtiens la date et l'heure actuelles avec fuseau horaire
+    now = timezone.now()
+
+    # Crée un dictionnaire pour stocker les séances par jour
+    days = {i: [] for i in range(1, 32)}
+    for seance in seances:
+        # Assure-toi que les datetime de la base de données sont aware
+        start_time = timezone.make_aware(seance.start_time) if timezone.is_naive(seance.start_time) else seance.start_time
+        end_time = timezone.make_aware(seance.end_time) if timezone.is_naive(seance.end_time) else seance.end_time
+
+        day = start_time.day
+        # Vérifie si la séance est en cours
+        if start_time <= now <= end_time:
+            seance.is_active = True
+        else:
+            seance.is_active = False
+        days[day].append(seance)
+
+    context = {
+        'days': days,
+        'current_day': now.day,
+        'month': now.strftime('%B'),
+        'year': now.year,
+        'semestres': Semestre.objects.all(),  # Pour le sélecteur de semestre dans le template
+        'selected_semestre': semestre
+    }
+    return render(request, 'teacher/teacher.html', context)
